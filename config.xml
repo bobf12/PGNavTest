@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.phonegap.helloworld.x" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>helloworld</name>
+    <name>Insight Proto Test</name>
     <description>
         Hello World sample application that responds to the deviceready event.
     </description>
@@ -9,6 +9,7 @@
     </author>
     <content src="index.html" />
     <preference name="DisallowOverscroll" value="true" />
+    <preference name="iosPersistentFileLocation" value="Library" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -26,5 +27,6 @@
         <preference name="BackupWebStorage" value="none" />
     </platform>
     <engine name="android" spec="^7.0.0" />
+    <engine name="ios" spec="^4.5.5" />
     <plugin name="cordova-plugin-downloader" spec="~0.0.3" />
 </widget>
