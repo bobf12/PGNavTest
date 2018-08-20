@@ -1,0 +1,73 @@
+{
+  "_from": "cordova-plugin-downloader",
+  "_id": "cordova-plugin-downloader@0.0.3",
+  "_inBundle": false,
+  "_integrity": "sha512-FfsZfdAK4rGdiTQhG8fX4feb7N8qMKd4W3/fr7e4wsTObeldaiYy6EYPEn8fMdSs3QwAi2L1WGbVJfAW9D/AVA==",
+  "_location": "/cordova-plugin-downloader",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-downloader",
+    "name": "cordova-plugin-downloader",
+    "escapedName": "cordova-plugin-downloader",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-downloader/-/cordova-plugin-downloader-0.0.3.tgz",
+  "_shasum": "b6b67544ca7d1b3a3522ba1b4889758e755812c1",
+  "_spec": "cordova-plugin-downloader",
+  "_where": "/Users/bob/Documents/PhoneGapProjects/PGNavTest",
+  "author": {
+    "name": "Ben Wilson"
+  },
+  "bugs": {
+    "url": "https://github.com/benjaminmwilson/cordova-plugin-downloader/issues"
+  },
+  "bundleDependencies": false,
+  "config": {
+    "lintdirs": "www/**.js lib/**.js"
+  },
+  "cordova": {
+    "id": "cordova-plugin-downloader",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "deprecated": false,
+  "description": "Cordova Downloader Plugin with no cordova-file-transfer dependency",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-spies": "^1.0.0",
+    "jshint": "^2.9.3",
+    "mocha": "^4.1.0"
+  },
+  "homepage": "https://github.com/benjaminmwilson/cordova-plugin-downloader#readme",
+  "keywords": [
+    "cordova",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "file",
+    "download",
+    "downloader",
+    "unzip"
+  ],
+  "license": "Apache 2.0",
+  "name": "cordova-plugin-downloader",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjaminmwilson/cordova-plugin-downloader.git"
+  },
+  "scripts": {
+    "lint": "rm -f npm-debug.log && jshint $npm_package_config_lintdirs",
+    "test": "mocha lib/**/**.spec.js"
+  },
+  "version": "0.0.3"
+}
