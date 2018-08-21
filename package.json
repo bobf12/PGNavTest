@@ -8,14 +8,12 @@
       "ios"
     ],
     "plugins": {
-      "cordova-plugin-downloader": {},
-      "cordova-sqlite-storage": {}
+      "cordova-plugin-downloader": {}
     }
   },
   "dependencies": {
     "cordova-android": "^7.0.0",
     "cordova-ios": "^4.5.5",
-    "cordova-plugin-downloader": "~0.0.3",
-    "cordova-sqlite-storage": "^2.4.0"
+    "cordova-plugin-downloader": "~0.0.3"
   }
 }

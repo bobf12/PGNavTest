@@ -53,9 +53,6 @@
     <feature name="Vibration">
         <param name="ios-package" value="CDVVibration" />
     </feature>
-    <feature name="SQLitePlugin">
-        <param name="ios-package" value="SQLitePlugin" />
-    </feature>
     <feature name="Zip">
         <param name="ios-package" value="ZipPlugin" />
     </feature>

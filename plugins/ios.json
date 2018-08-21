@@ -45,9 +45,6 @@
     },
     "cordova-plugin-vibration": {
       "PACKAGE_NAME": "com.phonegap.helloworld.x"
-    },
-    "cordova-sqlite-storage": {
-      "PACKAGE_NAME": "com.phonegap.helloworld.x"
     }
   },
   "dependent_plugins": {
