@@ -44,11 +44,10 @@ under the License.
 -->
 <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
 
+<link rel="stylesheet" href="lib/framework7/css/framework7.css"/>
+<link rel="stylesheet" href="lib/framework7/css/framework7.colors.css"/>
+
 <link rel="stylesheet" type="text/css" href="css/index.css" />
-
-<link rel="stylesheet" href="lib/framework7/css/framework7.ios.min.css"/>
-<link rel="stylesheet" href="lib/framework7/css/framework7.ios.colors.min.css"/>
-
 
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="lib/framework7/js/framework7.min.js"></script>
@@ -60,8 +59,20 @@ under the License.
 
 <body>
   <div class="app">
+
     <div class="page">
 
+      <div class="statusbar"></div>
+
+      <div id='xx1' class="range-slider">
+  <!-- range input -->
+  </div>
+
+
+      <div id='xx2' class="range-slider"  min="0" max="100" step="1" value="10" >
+  <!-- range input -->
+  <input id='yy2' type="range" min="0" max="100" step="1" value="10" >
+</div>
       <!-- Additional "tabbar" class -->
       <div class="toolbar tabbar">
         <div class="toolbar-inner">
@@ -71,10 +82,16 @@ under the License.
         </div>
       </div>
       <!-- Tabs -->
+      <div id='xx' class="range-slider">
+  <!-- range input -->
+  <input id='yy' type="range" min="0" max="100" step="1" value="10" >
+</div>
+
       <div class="tabs" id="questionnaire">
       </div>
-    </div>
+
   </div>
+</div>
   <div id='msgs'>stuff...</div>
 
 </body>
