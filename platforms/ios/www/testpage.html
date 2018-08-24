@@ -1,0 +1,139 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui, viewport-fit=cover"/>
+
+  <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+  <!-- <meta http-equiv="Content-Security-Policy" content="default-src * gap: ws: https://ssl.gstatic.com;img-src * 'self' data: content:;style-src 'self' 'unsafe-inline' data: blob:;script-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+-->
+  <!-- Good default declaration:
+  * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+  * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+  * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+  * Enable inline JS: add 'unsafe-inline' to default-src
+  * Enable eval(): add 'unsafe-eval' to default-src
+  * Create your own at http://cspisawesome.com
+-->
+<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+
+<link rel="stylesheet" href="lib/framework7/css/framework7.min.css"/>
+<link rel="stylesheet" type="text/css" href="css/index.css" />
+<link rel="stylesheet" href="css/framework7-icons.css">
+
+
+
+<title>Test</title>
+</head>
+
+<body>
+
+      <div id="app">
+          <div class="view view-main">
+              <div class="page">
+      <i class="f7-icons">radio</i>
+        <i class="f7-icons color-red">add</i>
+          <i class="f7-icons">alarm</i>
+
+      <div class="list">
+  <ul>
+    <li>
+      <label class="item-radio item-content">
+        <input type="radio" name="demo-radio" value="Books" checked />
+        <i class="icon icon-radio"></i>
+        <div class="item-inner">
+          <div class="item-title">Books</div>
+        </div>
+      </label>
+    </li>
+    <li>
+      <label class="item-radio item-content">
+        <input type="radio" name="demo-radio" value="Movies"/>
+        <i class="icon icon-radio"></i>
+        <div class="item-inner">
+          <div class="item-title">Movies</div>
+        </div>
+      </label>
+    </li>
+    <li>
+      <label class="item-radio item-content">
+        <input type="radio" name="demo-radio" value="Food"/>
+        <i class="icon icon-radio"></i>
+        <div class="item-inner">
+          <div class="item-title">Food</div>
+        </div>
+      </label>
+    </li>
+    <li>
+      <label class="item-radio item-content">
+        <input type="radio" name="demo-radio" value="Drinks"/>
+        <i class="icon icon-radio"></i>
+        <div class="item-inner">
+          <div class="item-title">Drinks</div>
+        </div>
+      </label>
+    </li>
+  </ul>
+</div>
+
+<div id='xx2' class="range-slider  range-slider-init"  data-label="true">
+<!-- range input -->
+<input id='yy2' type="range" min="0" max="100" step="1" value="10" >
+</div>
+
+***
+<!-- parameters set via data- attributes -->
+<div
+  class="range-slider range-slider-init"
+  data-min="0"
+  data-max="100"
+  data-step="10"
+  data-label="true"
+  data-value="50"
+></div>
+
+***
+<div class="block-title">Volume</div>
+<div class="list simple-list">
+  <ul>
+    <li>
+      <div class="item-cell width-auto flex-shrink-0">XXX XXX XXX</div>
+      <div class="item-cell flex-shrink-3">
+        <!-- range slider -->
+        <div class="range-slider range-slider-init"  data-label="true">
+          <input type="range" min="0" max="100" step="1" value="10">
+        </div>
+      </div>
+      <div class="item-cell width-auto flex-shrink-0">YYY</div>
+    </li>
+  </ul>
+</div>
+Stuff!
+
+</div>
+</div>
+</div>
+
+
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="lib/framework7/js/framework7.min.js"></script>
+<script type="text/javascript">
+
+var app = new Framework7({
+  theme:'auto',
+   root:'#app',
+   id: 'mdx.bob.insight', // App bundle ID
+   name: 'Insight' // App name
+ }
+);
+app.views.create('.view-main', {  });
+</script>
+</body>
+
+</html>

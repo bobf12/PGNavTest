@@ -8,6 +8,7 @@
         PhoneGap Team
     </author>
     <content src="index.html" />
+    <allow-navigation href="*" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="iosPersistentFileLocation" value="Library" />
     <access origin="*" />

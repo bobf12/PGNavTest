@@ -19,9 +19,15 @@
 
 
 var app = new Framework7({
-  theme:'ios'}
+  theme:'auto',
+   root:'#app',
+   id: 'mdx.bob.insight', // App bundle ID
+   name: 'Insight' // App name
+ }
 );
-
+function buildViews(){
+  var mainView = app.views.create('.view-main', {  });
+}
 // If we need to use custom DOM library, let's save it to $$ variable:
 var $$ = Dom7;
 
@@ -53,45 +59,10 @@ $$(document).on('deviceready', function() {
 
 var db=null;
 
-function initResponseDatabase(){
-  // Uses WebSQL DB.
-  // but// Doesn't work on Firefox! Oh well...
-
-  // if (window.cordova.platformId === 'browser') {
-  //   db = window.openDatabase('MyDatabase', '1.0', 'Data', 2*1024*1024);}
-  // else {db = window.sqlitePlugin.openDatabase({name: 'MyDatabase.db', location: 'default'});}
-  console.log("Initialising local DB");
-  db = openDatabase('ResponsesDB', '1.0', 'Data', 2*1024);
-  console.log(db);
-
-  db.transaction(function(tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS ResponseSets (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp)');
-    tx.executeSql('CREATE TABLE IF NOT EXISTS Responses (id INTEGER PRIMARY KEY AUTOINCREMENT, setid, question, response)');
-    // if ResponseSets empty  - add a new item
-    tx.executeSql('SELECT * FROM ResponseSets', [],
-    function(t, rs){
-      if(rs.rows.length==0){
-        tx.executeSql("INSERT INTO ResponseSets ('timestamp') VALUES ('ddd')");
-
-        console.log("Created new ResponseSet");
-      } else {
-        console.log("ResponseSets already exist.");
-      }
-    },
-    function(t, e){
-      console.log("Insert Error:", e);
-    } );
-  }, function(error) {
-    console.log('Transaction ERROR: ' + error.message);
-  }, function() {
-    console.log('Tables OK');
-  });
-}
-
 
 function getStudyFiles(){
   //var url='http://idc.mdx.ac.uk/insightgen/app-support/questionFiles/getStudyFiles.php?sid=300';
-  var url='http://idc.mdx.ac.uk/insightgen/app-support/questionFiles/studies/199/questions.xml';
+  var url='http://idc.mdx.ac.uk/insightgen/app-support/questionFiles/studies/100/questions.xml';
   //var downloader;
   console.log("Getting file ..."+url);
 
@@ -165,6 +136,7 @@ function parseXML(xmlText){
     console.log("QP:", qp.getAttribute("title"));
     //console.log("Here!", qp.getAttribute("title"));
     var newPageDiv=buildPageDiv(qp);
+
     //console.log("Qpages:", pageSeq);
 
     pageSeq.push("#"+qp.getAttribute("id"));
@@ -173,6 +145,7 @@ function parseXML(xmlText){
   // select first page:
   //  app.showTab(pageSeq[currentPage]);
   app.tab.show(pageSeq[currentPage]);
+  buildViews();
   // actually, <Questionnaire> tag specifies start page.
   // depends on whether we're doing signup or not.
 }
@@ -203,54 +176,62 @@ function buildPageDiv(qPage){
 
     var li = document.createElement("li");
     li.setAttribute("class", "item-content item-input");
-
-    // var icoD=document.createElement("div");
-    // icoD.setAttribute("class", "item-media");
-    // var ico=document.createElement("i");
-    // ico.setAttribute("class", "icon icon-forward");
-    // icoD.append(ico);
-    // li.append(icoD);
-
+    li.setAttribute("id", "li"+qid);
 
     var d1 = document.createElement("div");
     d1.setAttribute("class", "item-inner");
+
     var dLab = document.createElement("div");
     dLab.setAttribute("class", "item-title item-label");
     dLab.innerHTML=qElem.getAttribute("text");
     var d2 = document.createElement("div");
     d2.setAttribute("class", "item-input-wrap");
 
-    li.append(d1);
-    d1.append(dLab);
-    d1.append(d2);
-
+    //li.append(d1);
+    //d1.append(dLab);
+    //d1.append(d2);
 
     switch(qElem.tagName.toLowerCase()){
       case 'textlabel':
-      console.log('TextLabel', qElem.getAttribute('text'));
+      ul.append(li);
+
       inputElem = document.createElement("p");
       inputElem.setAttribute('id', qid);
-      //inputElem.innerHTML=qElem.getAttribute('text');
+      inputElem.innerHTML=qElem.getAttribute('text');
 
-      d2.append(inputElem);
+      //d1.remove(d2);
+      //d1.remove(dLab);
+      //dLab.innerHTML="";
+      li.append(d1);
+      d1.append(inputElem);
       break;
 
       case 'textbox':
 
-      console.log('TextBox');
+      ul.append(li);
+
       inputElem = document.createElement("input");
       inputElem.setAttribute("type", "text");
       inputElem.setAttribute('id', qid);
-      inputElem.setAttribute('oninput', 'changeText(id, value)');
+      inputElem.setAttribute('oninput', 'changeResponseValue(id, value)');
 
       var sp=document.createElement("span");
 
       sp.setAttribute("class", "input-clear-button");
+
       d2.append(inputElem);
       d2.append(sp);
+
+      li.append(d1);
+      d1.append(dLab);
+      d1.append(d2);
       break;
 
       case 'slider':
+
+      ul.append(li);
+      // inputElem is the div containing the slider.
+
       inputElem = document.createElement("div");
       inputElem.setAttribute("class", "range-slider  range-slider-init");
       inputElem.setAttribute("data-label", "true");
@@ -258,12 +239,40 @@ function buildPageDiv(qPage){
       sl.setAttribute("type", "range");
       sl.setAttribute('id', qid);
       sl.setAttribute('min', 0);
-      sl.setAttribute('max', 100);
+      var max = 100;
+      if(qElem.getAttribute('maxVal')!=null){
+        max=qElem.getAttribute('maxVal');
+      }
+      sl.setAttribute('max', max);
       sl.setAttribute('step', 1);
       sl.setAttribute('value', 50);
+      sl.setAttribute('onchange', 'changeResponseValue(id, value)');
       inputElem.append(sl);
 
-      d2.append(inputElem);
+      // Now wrap inputElem in a flex div and add endpoint labels.
+
+      var left = document.createElement("div");
+      left.setAttribute("class", "item-cell width-auto  flex-shrink-0");
+      left.innerHTML=qElem.getAttribute('left');
+
+      var right = document.createElement("div");
+      right.setAttribute("class", "item-cell width-auto  flex-shrink-0");
+      right.innerHTML=qElem.getAttribute('right');
+
+
+      var sliderDiv = document.createElement("div");
+      sliderDiv.setAttribute("class", "item-cell flex-shrink-3");
+
+      sliderDiv.append(inputElem);
+
+      d2.setAttribute("class", " item-input-wrap flex-container");
+      d2.append(left);
+      d2.append(sliderDiv);
+      d2.append(right);
+
+      li.append(d1);
+      d1.append(dLab);
+      d1.append(d2);
       break;
 
       case 'savebutton':
@@ -271,23 +280,80 @@ function buildPageDiv(qPage){
 
       case 'checkbox':
 
+      ul.append(li);
       inputElem = document.createElement("label");
-      inputElem.setAttribute("class", "label-checkbox");
+      inputElem.setAttribute("class", "item-checkbox item-content");
+
       var cb = document.createElement("input");
       cb.setAttribute("type", "checkbox");
       cb.setAttribute('id', qid);
-      cb.setAttribute('onchange', 'changeCB(id,checked)');
+      cb.setAttribute("name", "checkbox");
+      cb.setAttribute('onchange', 'changeResponseValue(id,checked)');
 
       var i = document.createElement("i");
-      i.setAttribute("class", "item-checkbox");
+      i.setAttribute("class", "icon icon-checkbox");
+
+      var lab =  document.createElement("div");
+      lab.setAttribute("class", "item-inner");
+      var lab2 =  document.createElement("div");
+      lab2.setAttribute("class", "item-title");
+      lab2.innerHTML=qElem.getAttribute('text');
+      lab.append(lab2);
 
       inputElem.append(cb);
       inputElem.append(i);
+      inputElem.append(lab);
 
-      d2.append(inputElem);
+      li.append(inputElem);
+
+      li.removeAttribute("class");
+
       break;
 
       case 'vradio':
+
+      var radl =  document.createElement("div");
+      radl.setAttribute("class", "list  no-hairlines-between  no-hairlines");
+      var ul1 =  document.createElement("ul");
+
+      [].forEach.call(qElem.getElementsByTagName("item"), function(radioItem){
+
+        var li1 =  document.createElement("li");
+
+        var lab1 =  document.createElement("label");
+        lab1.setAttribute("class", "item-radio item-content");
+
+        var inp1 =  document.createElement("input");
+        inp1.setAttribute("type", "radio");
+        inp1.setAttribute("name", "radio-"+qid);
+        //inp1.setAttribute("value", "Thing 1");
+
+        var ic =  document.createElement("i");
+        ic.setAttribute("class", "icon icon-radio");
+
+        var ii =  document.createElement("div");
+        ii.setAttribute("class", "item-inner");
+        var iTitle =  document.createElement("div");
+        iTitle.setAttribute("class", "item-title");
+        iTitle.innerHTML=radioItem.getAttribute("text");
+
+        ii.append(iTitle);
+
+        lab1.append(inp1);
+        lab1.append(ic);
+        lab1.append(ii);
+        li1.append(lab1);
+        ul1.append(li1);
+});
+      radl.append(ul1);
+      li.append(d1);
+      d1.append(dLab);
+      d1.append(radl);
+      //li.append(radl);
+
+      ul.append(li);
+
+
       break;
 
       case 'webelement':
@@ -297,23 +363,57 @@ function buildPageDiv(qPage){
       break;
     };
     if(inputElem!=null){
-
-
-      ul.append(li); // after switch, if not null
+      //ul.append(li); // after switch, if not null
     }
   });
-
   return newPageDiv;
 }
 
-function changeText(q, txt){
+function changeResponseValue(q, txt){
   storeResponse(q, txt);
 }
 
-function changeCB(q, response){
-  //console.log("CB Question:"+q, response);
-  storeResponse(q, response);
-}
+ /**
+  * -----------------------------------------
+  * Database functions
+  */
+
+  function initResponseDatabase(){
+    // Uses WebSQL DB.
+    // but// Doesn't work on Firefox! Oh well...
+
+    // if (window.cordova.platformId === 'browser') {
+    //   db = window.openDatabase('MyDatabase', '1.0', 'Data', 2*1024*1024);}
+    // else {db = window.sqlitePlugin.openDatabase({name: 'MyDatabase.db', location: 'default'});}
+    console.log("Initialising local DB");
+    db = openDatabase('ResponsesDB', '1.0', 'Data', 2*1024);
+    console.log(db);
+
+    db.transaction(function(tx) {
+      tx.executeSql('CREATE TABLE IF NOT EXISTS ResponseSets (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp)');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Responses (id INTEGER PRIMARY KEY AUTOINCREMENT, setid, question, response)');
+      // if ResponseSets empty  - add a new item
+      tx.executeSql('SELECT * FROM ResponseSets', [],
+      function(t, rs){
+        if(rs.rows.length==0){
+          tx.executeSql("INSERT INTO ResponseSets ('timestamp') VALUES ('ddd')");
+
+          console.log("Created new ResponseSet");
+        } else {
+          console.log("ResponseSets already exist.");
+        }
+      },
+      function(t, e){
+        console.log("Insert Error:", e);
+      } );
+    }, function(error) {
+      console.log('Transaction ERROR: ' + error.message);
+    }, function() {
+      console.log('Tables OK');
+    });
+  }
+
+
 
 function storeResponse(q, response){
   // response to question q has changed to txt.

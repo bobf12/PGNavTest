@@ -32,8 +32,15 @@ under the License.
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui, viewport-fit=cover"/>
 
   <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src * gap: ws: https://ssl.gstatic.com;img-src * 'self' data: content:;style-src 'self' 'unsafe-inline' data: blob:;script-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
-
+  <!-- <meta http-equiv="Content-Security-Policy" content="default-src * gap: ws: https://ssl.gstatic.com;img-src * 'self' data: content:;style-src 'self' 'unsafe-inline' data: blob:;script-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+-->
+<meta http-equiv="Content-Security-Policy" content="
+    default-src *  gap: ws: https://ssl.gstatic.com  'unsafe-inline';
+    style-src * 'unsafe-inline';
+    script-src  * 'unsafe-inline' 'unsafe-eval' data: blob:;
+    media-src *  'unsafe-inline';
+    img-src * data: content:  'unsafe-inline';
+" />
   <!-- Good default declaration:
   * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
   * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
@@ -44,35 +51,29 @@ under the License.
 -->
 <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
 
-<link rel="stylesheet" href="lib/framework7/css/framework7.css"/>
-<link rel="stylesheet" href="lib/framework7/css/framework7.colors.css"/>
 
+<link rel="stylesheet" href="lib/framework7/css/framework7.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/index.css" />
 
-<script type="text/javascript" src="cordova.js"></script>
-<script type="text/javascript" src="lib/framework7/js/framework7.min.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
+<style>
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+
+}
+</style>
 
 
 <title>Hello World</title>
 </head>
 
 <body>
-  <div class="app">
-
+  <div id="app">
+        <div class="view view-main">
     <div class="page">
-
       <div class="statusbar"></div>
 
-      <div id='xx1' class="range-slider">
-  <!-- range input -->
-  </div>
-
-
-      <div id='xx2' class="range-slider"  min="0" max="100" step="1" value="10" >
-  <!-- range input -->
-  <input id='yy2' type="range" min="0" max="100" step="1" value="10" >
-</div>
+      <a  class="link external" href="testpage.html">Test Link</a>
       <!-- Additional "tabbar" class -->
       <div class="toolbar tabbar">
         <div class="toolbar-inner">
@@ -81,19 +82,21 @@ under the License.
           <a  class="tab-link" onclick="doNext()">Next</a>
         </div>
       </div>
-      <!-- Tabs -->
-      <div id='xx' class="range-slider">
-  <!-- range input -->
-  <input id='yy' type="range" min="0" max="100" step="1" value="10" >
-</div>
+      <!-- Test page
 
+<a class="link external" href="testpage.html">Test</a>
+-->
       <div class="tabs" id="questionnaire">
       </div>
 
   </div>
 </div>
-  <div id='msgs'>stuff...</div>
+</div>
 
+
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="lib/framework7/js/framework7.min.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
 </body>
 
 </html>
