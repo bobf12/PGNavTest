@@ -20,106 +20,187 @@
 
 var app = new Framework7({
   theme:'auto',
-   root:'#app',
-   id: 'mdx.bob.insight', // App bundle ID
-   name: 'Insight' // App name
- }
+  root:'#app',
+  id: 'mdx.bob.insight', // App bundle ID
+  name: 'Insight' // App name
+}
 );
+
+var nextPageMap=new Map(); // Not really good enough - doesn't do conditionals.
+var currentPage;
+var pageHistory=[];
+
+var studyid;
+var userid;
+
 function buildViews(){
   var mainView = app.views.create('.view-main', {  });
 }
 // If we need to use custom DOM library, let's save it to $$ variable:
 var $$ = Dom7;
 
-//var pageSeq=[ "#tab-1", "#tab-2", "#tab-3"];
-var pageSeq=[ ];
-var currentPage=0;
-
-function doPrev(){
-  console.log("Prev", currentPage, pageSeq,pageSeq.length);
-  currentPage=currentPage-1;
-  if(currentPage<0){currentPage=pageSeq.length-1;}
-  app.tab.show(pageSeq[currentPage]);
-
-}
-
-function doNext(){
-  console.log("Next", currentPage, pageSeq,pageSeq.length);
-  currentPage=currentPage+1;
-  if(currentPage>=pageSeq.length){currentPage=0;}
-  app.tab.show(pageSeq[currentPage]);
-}
-
 $$(document).on('deviceready', function() {
   console.log("Device is ready!");
 
-  getStudyFiles()
-  initResponseDatabase();
+  initResponseDatabase(function(){ init(); } ); // make sure DB OK before proceeding?
+  getStudyFiles();
 });
 
-var db=null;
+function init() {
+  console.log("Initialise Settings");
+  setStudyID(200); // No! Needs to be a user preference or something.
 
-
-function getStudyFiles(){
-  //var url='http://idc.mdx.ac.uk/insightgen/app-support/questionFiles/getStudyFiles.php?sid=300';
-  var url='http://idc.mdx.ac.uk/insightgen/app-support/questionFiles/studies/100/questions.xml';
-  //var downloader;
-  console.log("Getting file ..."+url);
-
-  var dl = new download();
-  console.log("1  ...");
-  dl.Initialize({
-    fileSystem : cordova.file.dataDirectory,
-    folder: "files",
-    unzip: false,
-    remove: false,
-    timeout: 0,
-    success: DownloaderSuccess,
-    error: DownloaderError
-  });
-  console.log( "downloader initialised.");
-  dl.Get(url);
-  console.log("2 .... :");
+  // retrieve IDs and store in variables.
+  getStudyID(function (sid){studyid=sid;});
+  getUserID(function(uid){userid=uid;});
 }
 
-function DownloaderError(err) {
-  console.log("download error: " + err);
-  alert("download error: " + err);
-}
+function gotoStartPage(questionnaire){
+  // get startpage & signupstartpage from
+  // <Questionnaire  startpage="p0" signupstartpage="p00" >
+  // tag.
 
-function DownloaderSuccess() {
-  console.log("yay! Downloaded:");
-  processXML();
-}
+  // Have we done signup?
+  // set currentPage accordingly
 
-function processXML(){
-  // read /files/questions.process.xml
-  // parse
-  // do something!
-  var pathToXML=cordova.file.dataDirectory + "/files/";
-  var fileName="questions.xml";
-  console.log("pathToXML:", pathToXML);
-  window.resolveLocalFileSystemURL(pathToXML,
-    function (dirEntry) {
-
-      console.log("dirEntry:", dirEntry);
-      dirEntry.getFile(
-        fileName, {create:false}, function(fileEntry){
-          fileEntry.file(function(file){
-            var reader = new FileReader();
-            reader.onloadend = function(evt) {
-              //console.log("read success");
-              console.log(evt.target.result);
-              //console.log(evt);
-              parseXML(evt.target.result);
-            };
-            reader.readAsText(file);
-          }
-        );
+  console.log("Setting start page....");
+  getUserID(
+    function (userID){
+      if (userID==null){
+        currentPage='#'+questionnaire.getAttribute('signupstartpage');
+      } else {
+        currentPage='#'+questionnaire.getAttribute('startpage');
       }
-    );
+
+      console.log(currentPage);
+
+      app.tab.show(currentPage);
+      setButtonVisibility();
+    });
   }
-);
+
+
+  /**
+  * ---------------------------------------------------------------------------------
+  * Buttons and Actions
+  */
+
+  function doPrev(){
+
+    if(pageHistory.length>0){
+      currentPage=pageHistory.pop();
+      app.tab.show(currentPage);
+    }
+    setButtonVisibility();
+  }
+
+  function setButtonVisibility(){
+    if(pageHistory.length==0){
+      document.getElementById('prevButton').style.visibility='hidden';
+    } else {
+      document.getElementById('prevButton').style.visibility='visible';
+    }
+    if(nextPageMap.get(currentPage)==null){
+      document.getElementById('nextButton').style.visibility='hidden';
+    } else {
+      document.getElementById('nextButton').style.visibility='visible';
+    }
+  }
+
+  function doNext(){
+    if(nextPageMap.get(currentPage)!=null){
+      pageHistory.push(currentPage);
+      currentPage=nextPageMap.get(currentPage);
+      app.tab.show(currentPage);
+    }
+    setButtonVisibility();
+  }
+
+  function saveButtonPressed(nextPageID){
+    // get responses from DB - possibly multiple responseSets.
+    // turn into JSON
+    // upload
+    // create a new respnseSet in DB
+    // remove uploaded responses
+    console.log("Save pressed");
+    extractResponseSets(uploadResponses);
+
+    app.tab.show(nextPageID);
+    // Clear the history? Shouldn't be able to go back after an upload!
+    setButtonVisibility();
+  }
+
+  /**
+  * ---------------------------------------------------------------------------------
+  * Building
+  */
+
+  function getStudyFiles(){
+    //var url='http://idc.mdx.ac.uk/insightgen/app-support/questionFiles/getStudyFiles.php?sid=300';
+    // Need to do it this way as the variable studyid won't have been set by the time we get here.
+
+    getStudyID(getStudyFilesForId);
+    //getStudyFilesForId(studyid);
+  }
+
+  function getStudyFilesForId(sid){
+    var url='http://idc.mdx.ac.uk/insightgen/app-support/questionFiles/studies/'+sid+'/questions.xml';
+    //var downloader;
+    console.log("Getting file ..."+url);
+
+    var dl = new download();
+    console.log("1  ...");
+    dl.Initialize({
+      fileSystem : cordova.file.dataDirectory,
+      folder: "files",
+      unzip: false,
+      remove: false,
+      timeout: 0,
+      success: DownloaderSuccess,
+      error: DownloaderError
+    });
+    console.log( "downloader initialised.");
+    dl.Get(url);
+    console.log("2 .... :");
+  }
+
+  function DownloaderError(err) {
+    console.log("download error: " + err);
+    alert("download error: " + err);
+  }
+
+  function DownloaderSuccess() {
+    processXML();
+  }
+
+  function processXML(){
+    // read /files/questions.process.xml
+    // parse
+    // do something!
+    var pathToXML=cordova.file.dataDirectory + "/files/";
+    var fileName="questions.xml";
+    console.log("pathToXML:", pathToXML);
+    window.resolveLocalFileSystemURL(pathToXML,
+      function (dirEntry) {
+
+        console.log("dirEntry:", dirEntry);
+        dirEntry.getFile(
+          fileName, {create:false}, function(fileEntry){
+            fileEntry.file(function(file){
+              var reader = new FileReader();
+              reader.onloadend = function(evt) {
+                //console.log("read success");
+                console.log(evt.target.result);
+                //console.log(evt);
+                parseXML(evt.target.result);
+              };
+              reader.readAsText(file);
+            }
+          );
+        }
+      );
+    }
+  );
 
 }
 function parseXML(xmlText){
@@ -131,27 +212,33 @@ function parseXML(xmlText){
 
   var qs = xmlDoc.getElementsByTagName("Questionnaire")[0];
   var qps = qs.getElementsByTagName("QPage");
-  console.log("QPS:", qps);
+  //console.log("QPS:", qps);
   [].forEach.call(qps, function(qp){
-    console.log("QP:", qp.getAttribute("title"));
+    //console.log("QP:", qp.getAttribute("title"));
     //console.log("Here!", qp.getAttribute("title"));
     var newPageDiv=buildPageDiv(qp);
 
-    //console.log("Qpages:", pageSeq);
+    //pageSeq.push("#"+qp.getAttribute("id"));
 
-    pageSeq.push("#"+qp.getAttribute("id"));
     qDiv.append(newPageDiv);
   });
+  console.log("Links: ", nextPageMap);
   // select first page:
   //  app.showTab(pageSeq[currentPage]);
-  app.tab.show(pageSeq[currentPage]);
+  gotoStartPage(qs);
+
   buildViews();
   // actually, <Questionnaire> tag specifies start page.
   // depends on whether we're doing signup or not.
 }
 
 function buildPageDiv(qPage){
-  // create a single QPage.
+  // create a single QPage from the source element qPage.
+
+  var links = qPage.getElementsByTagName("Link");
+  if (links.length>0){
+    nextPageMap.set('#'+qPage.getAttribute("id"), '#'+links.item(links.length-1).id);  // i.e. link to the last one
+  }
 
   var newPageDiv=document.createElement("div");
   newPageDiv.setAttribute("class", "page-content tab");
@@ -276,6 +363,16 @@ function buildPageDiv(qPage){
       break;
 
       case 'savebutton':
+
+      ul.append(li);
+
+      var b = document.createElement("button");
+      b.setAttribute("class", "button");
+      b.setAttribute("nextpage", qElem.getAttribute("nextpage"));
+      b.innerHTML=qElem.getAttribute('text');
+      b.setAttribute("onclick", "saveButtonPressed("+qElem.getAttribute("nextpage")+")");
+      li.append(b);
+
       break;
 
       case 'checkbox':
@@ -313,20 +410,22 @@ function buildPageDiv(qPage){
       case 'vradio':
 
       var radl =  document.createElement("div");
-      radl.setAttribute("class", "list  no-hairlines-between  no-hairlines");
+      radl.setAttribute("class", "list inner-radio-list no-hairlines-between  no-hairlines"); // can we remove some of the space around the lsit?
+      //radl.setAttribute("id", qid); // can we remove some of the space around the lsit?
       var ul1 =  document.createElement("ul");
 
       [].forEach.call(qElem.getElementsByTagName("item"), function(radioItem){
 
         var li1 =  document.createElement("li");
-
         var lab1 =  document.createElement("label");
         lab1.setAttribute("class", "item-radio item-content");
 
         var inp1 =  document.createElement("input");
         inp1.setAttribute("type", "radio");
-        inp1.setAttribute("name", "radio-"+qid);
-        //inp1.setAttribute("value", "Thing 1");
+        inp1.setAttribute("name", qid);
+        inp1.setAttribute("value", radioItem.getAttribute('id'));
+
+        inp1.setAttribute('onchange', 'changeResponseValue(name,value)');
 
         var ic =  document.createElement("i");
         ic.setAttribute("class", "icon icon-radio");
@@ -344,7 +443,7 @@ function buildPageDiv(qPage){
         lab1.append(ii);
         li1.append(lab1);
         ul1.append(li1);
-});
+      });
       radl.append(ul1);
       li.append(d1);
       d1.append(dLab);
@@ -373,53 +472,64 @@ function changeResponseValue(q, txt){
   storeResponse(q, txt);
 }
 
- /**
-  * -----------------------------------------
-  * Database functions
-  */
+/**
+* ---------------------------------------------------------------------------------
+* Database functions
+*/
 
-  function initResponseDatabase(){
-    // Uses WebSQL DB.
-    // but// Doesn't work on Firefox! Oh well...
+var db=null;
 
-    // if (window.cordova.platformId === 'browser') {
-    //   db = window.openDatabase('MyDatabase', '1.0', 'Data', 2*1024*1024);}
-    // else {db = window.sqlitePlugin.openDatabase({name: 'MyDatabase.db', location: 'default'});}
-    console.log("Initialising local DB");
-    db = openDatabase('ResponsesDB', '1.0', 'Data', 2*1024);
-    console.log(db);
+function initResponseDatabase(callback){
+  // Uses WebSQL DB.
+  // but// Doesn't work on Firefox! Oh well...
 
-    db.transaction(function(tx) {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS ResponseSets (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp)');
-      tx.executeSql('CREATE TABLE IF NOT EXISTS Responses (id INTEGER PRIMARY KEY AUTOINCREMENT, setid, question, response)');
-      // if ResponseSets empty  - add a new item
-      tx.executeSql('SELECT * FROM ResponseSets', [],
-      function(t, rs){
-        if(rs.rows.length==0){
-          tx.executeSql("INSERT INTO ResponseSets ('timestamp') VALUES ('ddd')");
+  // callback is called once DB initialisation done.
 
-          console.log("Created new ResponseSet");
-        } else {
-          console.log("ResponseSets already exist.");
-        }
-      },
-      function(t, e){
-        console.log("Insert Error:", e);
-      } );
-    }, function(error) {
-      console.log('Transaction ERROR: ' + error.message);
-    }, function() {
-      console.log('Tables OK');
-    });
-  }
+  // if (window.cordova.platformId === 'browser') {
+  //   db = window.openDatabase('MyDatabase', '1.0', 'Data', 2*1024*1024);}
+  // else {db = window.sqlitePlugin.openDatabase({name: 'MyDatabase.db', location: 'default'});}
+  console.log("Initialising local DB");
+  db = openDatabase('ResponsesDB', '1.0', 'Data', 2*1024);
+  console.log(db);
 
+  db.transaction(function(tx) {
+    tx.executeSql('CREATE TABLE IF NOT EXISTS ResponseSets (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS Responses (id INTEGER PRIMARY KEY AUTOINCREMENT, setid, question, response)');
 
+    tx.executeSql('CREATE TABLE IF NOT EXISTS QSettings (name STRING PRIMARY KEY, value)');
+
+    // if ResponseSets empty  - add a new item
+    // should this be done as a callback? Or do the creates above run synchronously?
+
+    tx.executeSql('SELECT * FROM ResponseSets', [],
+    function(t, rs){
+      if(rs.rows.length==0){
+        tx.executeSql("INSERT INTO ResponseSets ('timestamp') VALUES ('ddd')");
+
+        console.log("Created new ResponseSet");
+      } else {
+        console.log("ResponseSets already exist.");
+      }
+    },
+    function(t, e){
+      console.log("Insert Error:", e);
+    } );
+
+    callback();
+
+  }, function(error) {
+    console.log('Transaction ERROR: ' + error.message);
+  }, function() {
+    console.log('Tables OK');
+  });
+}
 
 function storeResponse(q, response){
   // response to question q has changed to txt.
   console.log("Question:"+q, response);
 
   db.transaction(function(tx) {
+    // find the latest ResponseSetID, and store this response as part of that set
     tx.executeSql('SELECT id FROM ResponseSets ORDER BY id DESC', [], function(tx1, rs) {
       var latestSetId = rs.rows.item(0).id;
       tx.executeSql("SELECT * FROM Responses WHERE setid=? AND question = ?", [latestSetId, q] ,
@@ -438,4 +548,182 @@ function storeResponse(q, response){
     }
   );
 });
+}
+
+function deleteResponses(setID){
+  // delete the responses from a given set.
+  db.transaction(function(tx) {
+    // find the latest ResponseSetID, and store this response as part of that set
+    tx.executeSql('DELETE FROM Responses WHERE setid=?', [setID]);
+  });
+}
+
+/**
+* ---------------------------------------------------------------------------------
+* Upload responses
+*/
+
+function uploadResponses(resps, setID){
+  // Upload the object resps to the server.
+  // setID passed in so that it can be deleted on success
+  var url="http://idc.mdx.ac.uk/insightgen/app-support/insightUpload2.php";
+  getSettings(function (settings){
+    // 2018-09-10T14:03:45.352Z - need to truncate to:
+    // 2018-09-10T14:03:45
+    var timestamp = (new Date()).toISOString().substr(0, 19);
+    var data={
+      userid: settings.get("userid"),
+      studyid: settings.get("studyid"),
+      timestamp:timestamp,
+      responses:resps
+    };
+    console.log("uploadResponses", data);
+
+    app.request.post(url, data, function(data, status, xhr){ uploadSuccess(data, status, xhr, setID); }, uploadError);
+  });
+}
+
+function uploadSuccess(data, status, xhr, setID){
+  //console.log("Upload: Success", data, status, xhr);
+  // data will contain something like { 'userid':'1234'}
+  // setID is the responseSedID in local storage - these respones will be seleted on successful upload.
+  if(status==200){
+    // get userID
+    var newUserID=JSON.parse(data).userid;
+    console.log("User ID:", data, JSON.parse(data).userid);
+    // save in settings (if not already there?):
+    setUserID(newUserID);
+
+    deleteResponses(setID);
+    // delete the responses that have been uploaded
+  } else {
+    // What can cause us to get here?
+    // create a new response ID
+  }
+}
+
+function uploadError(xhr, status){
+  // what can cause us to get here?
+  console.log("Upload: Error", xhr, status);
+}
+
+/**
+* ---------------------------------------------------------------------------------
+* Extracting responses for upload.
+*/
+
+
+
+function extractResponseSets(fun){
+  // Extract all responseSets, and apply fun to each one (e.g. to do the upload - uploadResponses)
+  // Generate a new responseSetID.
+
+  //console.log("extractResponseSets");
+
+  db.transaction(function(tx) {
+    tx.executeSql('SELECT * FROM ResponseSets', [], function(tx1, rs) {
+      for(var i=0; i<rs.rows.length; i++){
+        var setId=rs.rows.item(i).id;
+        extractResponses(setId, fun);
+      }
+    });
+    var timestamp = (new Date()).toISOString().substr(0, 19);
+
+    tx.executeSql('INSERT INTO ResponseSets (timestamp) values (?)', [timestamp]);
+  });
+}
+
+
+function extractResponses(setID, fun){
+  // console.log("extractResponses");
+  // get responses in the specified set. Turn into an object - { qid:resp, qid:resp, ...}
+  // apply function fun (e.g. to do the upload - uploadResponses) to the entire object.
+
+  var resp={};
+  db.transaction(function(tx) {
+    tx.executeSql('SELECT * FROM Responses WHERE setid=?', [setID], function(tx1, rs) {
+      for(var i=0; i<rs.rows.length; i++){
+        resp[rs.rows.item(i).question]=rs.rows.item(i).response;
+      }
+      fun(resp, setID);
+    });
+  });
+}
+
+
+
+/**
+* ---------------------------------------------------------------------------------
+* Settings - userid, studyid
+*/
+
+// Access settings:
+function getUserID(fun){
+  // return User ID, if one has been set; null otherwise
+  return getSetting('userid', fun);
+}
+
+function getStudyID(fun){
+  // return Study ID, if one has been set; null otherwise
+  getSetting('studyid', fun);
+
+  //return 100;
+}
+
+
+function getSettings(fun){
+  // retrieve all settings values as a name-value pair map; apply fun to it.
+  var settingsMap = new Map();
+  db.transaction(function(tx) {
+    tx.executeSql("SELECT * FROM QSettings", [], function(tx1, rs){
+      //console.log("SELECT: ", rs.rows.item(0).value);
+      for(var i = 0; i<rs.rows.length; i++) {
+        settingsMap.set(rs.rows.item(i).name, rs.rows.item(i).value);
+      }
+      fun(settingsMap);
+    });
+  });
+}
+
+function getSetting(name, fun){
+  // retrieve the named setting value; if one has been set, apply fun to it.
+  //console.log("getSetting: ", name, fun);
+  db.transaction(function(tx) {
+    tx.executeSql("SELECT * FROM QSettings WHERE name=?", [name], function(tx1, rs){
+      //console.log("SELECT: ", rs.rows.item(0).value);
+      if (rs.rows.length==0){
+        // no  setting for this name.
+        //return null;
+        fun(null);
+      } else {
+        fun(rs.rows.item(0).value);
+      }  }    );
+    });
+  }
+
+  function setUserID(value){
+    setSetting('userid', value);
+  }
+
+  function setStudyID(value){
+    setSetting('studyid', value);
+  }
+
+  function setSetting(name, value){
+    // return User ID, if one has been set; null otherwise
+    db.transaction(function(tx) {
+      tx.executeSql("SELECT * FROM QSettings WHERE name=?", [name], function(tx1, rs){
+        if (rs.rows.length==0){
+          // no user ID. Insert a new one.
+          console.log("Inserting Setting", name, value);
+          tx.executeSql("INSERT INTO QSettings (name, value) VALUES (?, ?)", [name, value],
+          function(t, r){ console.log("Success"); }, function(t, e){  console.log("Error", e); },
+        );
+      } else {
+        // UserID exists. Update it.
+        console.log("Updating  Setting", name, value);
+        tx.executeSql("UPDATE QSettings SET value=? WHERE name=?", [ value, name]);
+      }
+    });
+  });
 }
