@@ -95,20 +95,20 @@
     "is_top_level": true,
     "variables": {}
   },
-  "cordova-plugin-downloader": {
-    "source": {
-      "type": "registry",
-      "id": "cordova-plugin-downloader"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-plugin-zip": {
     "source": {
       "type": "registry",
       "id": "cordova-plugin-zip@>=3.0.0"
     },
     "is_top_level": false,
+    "variables": {}
+  },
+  "cordova-plugin-downloader": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-downloader"
+    },
+    "is_top_level": true,
     "variables": {}
   }
 }

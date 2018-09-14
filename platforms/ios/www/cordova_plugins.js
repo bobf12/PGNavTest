@@ -230,22 +230,6 @@ module.exports = [
     "runs": true
   },
   {
-    "id": "cordova-plugin-zip.Zip",
-    "file": "plugins/cordova-plugin-zip/zip.js",
-    "pluginId": "cordova-plugin-zip",
-    "clobbers": [
-      "zip"
-    ]
-  },
-  {
-    "id": "cordova-plugin-downloader.download",
-    "file": "plugins/cordova-plugin-downloader/www/download.js",
-    "pluginId": "cordova-plugin-downloader",
-    "clobbers": [
-      "download"
-    ]
-  },
-  {
     "id": "cordova-plugin-geolocation.Coordinates",
     "file": "plugins/cordova-plugin-geolocation/www/Coordinates.js",
     "pluginId": "cordova-plugin-geolocation",
@@ -389,6 +373,22 @@ module.exports = [
       "navigator.notification",
       "navigator"
     ]
+  },
+  {
+    "id": "cordova-plugin-zip.Zip",
+    "file": "plugins/cordova-plugin-zip/zip.js",
+    "pluginId": "cordova-plugin-zip",
+    "clobbers": [
+      "zip"
+    ]
+  },
+  {
+    "id": "cordova-plugin-downloader.download",
+    "file": "plugins/cordova-plugin-downloader/www/download.js",
+    "pluginId": "cordova-plugin-downloader",
+    "clobbers": [
+      "download"
+    ]
   }
 ];
 module.exports.metadata = 
@@ -400,14 +400,14 @@ module.exports.metadata =
   "cordova-plugin-device": "1.1.7",
   "cordova-plugin-dialogs": "1.3.4",
   "cordova-plugin-file": "4.3.3",
-  "cordova-plugin-zip": "3.1.0",
-  "cordova-plugin-downloader": "0.0.3",
   "cordova-plugin-geolocation": "2.4.3",
   "cordova-plugin-globalization": "1.0.9",
   "cordova-plugin-inappbrowser": "1.7.2",
   "cordova-plugin-media-capture": "1.4.3",
   "cordova-plugin-network-information": "1.3.4",
-  "cordova-plugin-vibration": "2.1.6"
+  "cordova-plugin-vibration": "2.1.6",
+  "cordova-plugin-zip": "3.1.0",
+  "cordova-plugin-downloader": "0.0.4"
 };
 // BOTTOM OF METADATA
 });

@@ -3,9 +3,10 @@
   "display": "standalone",
   "name": "Insight Proto Test",
   "short_name": "Insight Proto Test",
-  "version": "com.phonegap.helloworld.x",
-  "description": "Hello World sample application that responds to the deviceready event.",
+  "version": "mdx.bob.insight",
+  "description": "Insight App.",
   "author": "PhoneGap Team",
   "icons": [],
+  "orientation": "portrait",
   "start_url": "index.html"
 }

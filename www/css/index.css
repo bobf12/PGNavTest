@@ -40,17 +40,77 @@ body {
 /* Portrait layout (default) */
 
 
+.color-red { color: #FF0000; }
 
-
-h1 {
+/* Questionnaire elements */
+.insight-qpage-title {
     font-size:24px;
     font-weight:normal;
     margin:0px;
     overflow:visible;
     padding:0px;
     text-align:center;
+    color:red;
+
 }
 
+.insight-question-text {
+    font-size:36px ;
+    font-weight:normal;
+    margin:0px;
+    overflow:visible;
+    padding:0px;
+    text-align:left;
+    color:blue;
+
+}
+
+.insight-text-label{
+    font-size:24px;
+    font-weight:normal;
+    margin:0px;
+    overflow:visible;
+    padding:0px;
+    text-align:left;
+    color:green;
+
+}
+.insight-slider-label{
+    font-size:14px;
+    margin:0px;
+    overflow:visible;
+    padding:0px;
+    color:orange;
+}
+.insight-save-button {}
+
+.insight-checkbox-label{
+    font-size:14px;
+    margin:0px;
+    overflow:visible;
+    padding:0px;
+    color:orange;}
+
+.insight-radio-item {
+    font-size:14px;
+    margin:0px;
+    overflow:visible;
+    padding:0px;
+    color:purple;
+  }
+
+  .insight-radio {
+
+      margin:0px;
+      padding:0px;
+
+    }
+
+
+
+/*
+-----------------------------------------------------------------
+*/
 .event {
     border-radius:4px;
     -webkit-border-radius:4px;

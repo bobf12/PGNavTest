@@ -35,64 +35,120 @@ under the License.
   <!-- <meta http-equiv="Content-Security-Policy" content="default-src * gap: ws: https://ssl.gstatic.com;img-src * 'self' data: content:;style-src 'self' 'unsafe-inline' data: blob:;script-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
 -->
 <meta http-equiv="Content-Security-Policy" content="
-    default-src *  gap: ws: https://ssl.gstatic.com  'unsafe-inline';
-    style-src * 'unsafe-inline';
-    script-src  * 'unsafe-inline' 'unsafe-eval' data: blob:;
-    media-src *  'unsafe-inline';
-    img-src * data: content:  'unsafe-inline';
+default-src *  gap: ws: https://ssl.gstatic.com  cdvfile:https://ssl.gstatic.com 'unsafe-inline';
+style-src * 'unsafe-inline';
+script-src  * 'unsafe-inline' 'unsafe-eval' data: blob:;
+media-src *  'unsafe-inline';
+img-src * data: filesystem: content: file: cdvfile: 'unsafe-inline';
 " />
-  <!-- Good default declaration:
-  * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-  * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-  * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-  * Enable inline JS: add 'unsafe-inline' to default-src
-  * Enable eval(): add 'unsafe-eval' to default-src
-  * Create your own at http://cspisawesome.com
+<!-- Good default declaration:
+* gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+* https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+* Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+* Enable inline JS: add 'unsafe-inline' to default-src
+* Enable eval(): add 'unsafe-eval' to default-src
+* Create your own at http://cspisawesome.com
 -->
 <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
 
 
 <link rel="stylesheet" href="lib/framework7/css/framework7.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/index.css" />
+<link rel="stylesheet" href="css/framework7-icons.css">
 
 <style>
 
 </style>
 
 
-<title>Hello World</title>
+<title>Insight</title>
 </head>
 
 <body>
   <div id="app">
-        <div class="view view-main">
-    <div class="page">
-      <div class="statusbar"></div>
 
-      <!-- <a  class="link external" href="testpage.html">Test Link</a> -->
-      <!-- Additional "tabbar" class -->
-      <div class="toolbar tabbar">
-        <div class="toolbar-inner">
-          <!-- Links have "tab-link" class instead of just "link" to switch tabs -->
+    <div class="panel panel-left  panel-cover" style="width:80%">
+      <div class="toolbar">
+      <div class="toolbar-inner">
 
-          <a  id="prevButton" class="button tab-link" onclick="doPrev()" style="width:50%;text-align:left;">Prev</a>
-          <a  id="nextButton" class="button tab-link" onclick="doNext()"  style="width:50%;text-align:right;">Next</a>
-        </div>
+        <div class="left">Information</div>
+        <div class="right"><a class="panel-close" href="#"><i class="f7-icons">close-round-fill</i></a></div>
       </div>
-      <!-- Test page
+    </div>
+      <div class="block">
+        <p>Left Panel content here</p>
+        <p>Help / About / ...</p>
+
+      </div>
+
+    </div>
+
+    <div class="panel panel-right  panel-reveal">
+
+        <div class="toolbar">
+        <div class="toolbar-inner">
+        <div class="left">Settings</div>
+        <div class="right"><a class="panel-close" href="#"><i class="f7-icons">close-round-fill</i></a></div>
+      </div>
+    </div>
+      <div class="block">
+        <form class="list" id="my-form">
+          <ul>
+            <li>
+              <div class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">Study ID</div>
+                  <div class="item-input-wrap">
+                    <input type="text" name="sid"  id="sid" placeholder="Study ID">
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="col"><a class="button" onclick="setStudyIDPressed(sid)" href="#">Set</a></div>
+            </li>
+          </ul>
+
+        </form>
+
+        <div class="col"><a class="button" onclick="emptyDB()" href="#">Delete DB Contents</a></div>
+        <a class="panel-close" href="#"><i class=" f7-icons color-red">close-round-fill</i></a>
+
+      </div>
+    </div>
+    <div class="view view-main">
+      <div class="page" name="questionnaire">
+        <div class="statusbar"></div>
+
+        <!-- <a  class="link external" href="testpage.html">Test Link</a> -->
+        <!-- Additional "tabbar" class -->
+        <div class="toolbar tabbar">
+          <div class="toolbar-inner">
+            <!-- Links have "tab-link" class instead of just "link" to switch tabs -->
+
+            <a  id="prevButton" class="button tab-link" onclick="doPrev()" style="width:25%;text-align:left;"><i class="icon icon-prev"></i></a>
+
+            <a  id="helpButton" class="button tab-link panel-open" data-panel="left" href="#" style="width:25%;text-align:left;"><i class="f7-icons">info</i></a>
+
+            <a  id="settingsButton" class="button tab-link panel-open" data-panel="right" href="#"  style="width:25%;text-align:left;"><i class="f7-icons">settings</i></a>
+            <a  id="nextButton" class="button tab-link" onclick="doNext()"  style="width:25%;text-align:right;"><i class="icon icon-next"></i></a>
+          </div>
+        </div>
+        <!-- Test page
         <a class="link external" href="testpage.html">Test</a>
       -->
 
       <div class="tabs" id="questionnaire">
+        <p>Content will be here</p>
       </div>
+    </div>
   </div>
 </div>
-</div>
 
 
-  <script type="text/javascript" src="cordova.js"></script>
-  <script type="text/javascript" src="lib/framework7/js/framework7.min.js"></script>
-  <script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="lib/framework7/js/framework7.min.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
 </body>
 
 </html>

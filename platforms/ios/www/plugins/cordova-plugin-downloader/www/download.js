@@ -7,7 +7,8 @@ function Download() {
         folder: "folder",
         unzip: false,
         remove: false,
-        timeout: 0
+        timeout: 0,
+        headers: []
     };
 }
 
@@ -38,6 +39,10 @@ Download.prototype.Initialize = function(settings) {
 
     if(typeof settings.timeout !== "undefined") {
         this.Settings.timeout = settings.timeout;
+    }
+    
+    if(typeof settings.headers !== "undefined") {
+        this.Settings.headers = settings.headers;
     }
 
     if(typeof settings.success !== "undefined") {
@@ -77,6 +82,9 @@ Download.prototype.Get = function(url) {
 
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
+        that.Settings.headers.forEach(function(header){
+            xhr.setRequestHeader(header.Key, header.Value);
+        });        
         xhr.responseType = 'blob';
         xhr.timeout = that.Settings.timeout;
 

@@ -1,23 +1,36 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.phonegap.helloworld.x" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="mdx.bob.insight" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Insight Proto Test</name>
     <description>
-        Hello World sample application that responds to the deviceready event.
+        Insight App.
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
+    <author email="b.fields@mdx.ac.uk" href="http://www.cs.mdx.ac.uk">
         PhoneGap Team
     </author>
     <content src="index.html" />
     <allow-navigation href="*" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="iosPersistentFileLocation" value="Library" />
+    <preference name="Orientation" value="portrait" />
     <access origin="*" />
+    <access origin="*://*/*" />
+    <access origin="file:///*" />
+    <access origin="cdvfile://*" />
+    <access origin="content:///*" />
+    <allow-navigation href="*" />
+    <allow-navigation href="*://*/*" />
+    <allow-navigation href="file:///*/*" />
+    <allow-navigation href="http://*/*" />
+    <allow-navigation href="https://*/*" />
+    <allow-navigation href="data:*" />
+    <allow-intent href="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="tel:*" />
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <allow-intent href="file:*" />
     <platform name="android">
         <allow-intent href="market:*" />
         <preference name="android-minSdkVersion" value="14" />
@@ -27,6 +40,14 @@
         <allow-intent href="itms-apps:*" />
         <preference name="BackupWebStorage" value="none" />
     </platform>
+    <feature name="http://api.phonegap.com/1.0/battery" />
+    <feature name="http://api.phonegap.com/1.0/camera" />
+    <feature name="http://api.phonegap.com/1.0/contacts" />
+    <feature name="http://api.phonegap.com/1.0/file" />
+    <feature name="http://api.phonegap.com/1.0/geolocation" />
+    <feature name="http://api.phonegap.com/1.0/media" />
+    <feature name="http://api.phonegap.com/1.0/network" />
+    <feature name="http://api.phonegap.com/1.0/notification" />
     <engine name="android" spec="^7.0.0" />
     <engine name="ios" spec="^4.5.5" />
     <plugin name="cordova-plugin-downloader" spec="~0.0.3" />
